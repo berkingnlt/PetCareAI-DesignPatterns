@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<title>PetCare AI</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<h1>Petcare AI</h1>
+
+<nav>
+<a href="login.html">Giriş Yap</a>
+<a href="register.html">Kayıt Ol</a>
+<a href="vets.html">Veterinerler</a>
+</nav>
+
+</header>
+
+
+
+<section class="hero">
+
+<h2>Evcil Hayvanınınızın Sağlık Asistanı</h2>
+
+<p>
+Evcil hayvanlarınızın aşılarını, sağlık kayıtlarını takip edin ve yapay zekadan destek alın
+</p>
+
+</section>
+
+
+
+<section class="news">
+
+<h2>Günlük Haberler</h2>
+
+<div class="news-grid">
+
+
+<div class="news-card">
+
+<img src="images/pet-water.jpg">
+
+<h3>Her zaman taze su bulundurun.</h3>
+
+<p>
+Evcil hayvanların sürekli olarak temiz suya erişimleri olmalıdır. Su kaplarını her gün kontrol edin.
+</p>
+
+</div>
+
+
+<div class="news-card">
+
+<img src="images/dog-walk.jpg">
+
+<h3>Günlük Köpek Yürüyüşleri Çok Önemli </h3>
+
+<p>
+Köpeklerin sağlıklı ve mutlu kalabilmeleri için düzenli egzersize ihtiyaçları vardır.
+</p>
+
+</div>
+
+
+<div class="news-card">
+
+<img src="images/cat-food.jpg">
+
+<h3>Sağlıklı Beslenme Alışkanlıkları</h3>
+
+<p>
+Evcil hayvanlarınızı düzenli saatlerde ve kaliteli mama ile besleyin.
+</p>
+
+</div>
+
+
+<div class="news-card">
+
+<img src="images/vet-check.jpg">
+
+<h3>Düzenli Veteriner Ziyaretleri</h3>
+
+<p>
+Rutin sağlık kontrolleri, sağlık sorunlarını erken teşhis etmeye yardımcı olabilir.
+</p>
+
+</div>
+
+
+</div>
+
+</section>
+
+
+
+<section class="reminder">
+
+<h2>Günlük Hatırlatmalar</h2>
+
+<ul>
+
+<li>Sokak hayvanları için dışarıya yiyecek ve su koymayı unutmayın.</li>
+
+<li>Evcil hayvanınızın mama ve su kaplarını kontrol edin..</li>
+
+<li>Köpeğinizin bugün yürüyüşe ihtiyacı olabilir.</li>
+
+<li>Evcil hayvanınızla biraz zaman geçirin ve oyun oynayın.</li>
+
+</ul>
+
+</section>
+
+
+
+<footer>
+
+<p>PetCare AI © 2026</p>
+
+</footer>
+
+
+
+<!-- CHAT BUTTON -->
+
+<div class="chat-toggle" onclick="toggleChat()">
+💬
+</div>
+
+
+
+<!-- CHAT WINDOW -->
+
+<div class="chat-container" id="chatBox">
+
+<div class="chat-header">
+PetCare AI Assistant
+</div>
+
+
+<div class="chat-messages" id="chatMessages"></div>
+
+
+<div class="chat-input-area">
+
+<input
+id="chatInput"
+placeholder="Ask about your pet..."
+>
+
+<button onclick="sendMessage()">
+Send
+</button>
+
+</div>
+
+</div>
+
+
+
+<script src="js/chat.js"></script>
+
+</body>
+</html>

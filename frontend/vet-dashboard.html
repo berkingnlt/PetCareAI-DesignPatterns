@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ana Panel - PetCare AI</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <header class="topbar">
+        <h1>PetCare AI</h1>
+        <nav id="vetNav">
+            <a href="vet-dashboard.html" style="color: var(--secondary-mavi); font-weight: bold;">Ana Panel</a>
+            <a href="vet-ajanda.html">Ajandam</a>
+            <a href="vet-hastalar.html">Hastalarım</a>
+            <a href="profile.html">Profilim</a>
+            <a href="index.html" onclick="localStorage.removeItem('loggedIn'); localStorage.removeItem('loggedInUser');">Çıkış Yap</a>
+        </nav>
+    </header>
+
+    <div class="container" style="margin-bottom: 50px;">
+        <h2 style="text-align: center; margin-top: 40px; color: var(--secondary-mavi);">👨‍⚕️ Veteriner Kontrol Paneli</h2>
+        
+        <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 30px;">
+            
+            <div style="flex: 1; min-width: 300px; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                <div id="vet-appointments-list">
+                    </div>
+            </div>
+
+            <div style="flex: 1; min-width: 300px; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                <h3 style="color: var(--secondary-mavi); margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px;">⏱️ Randevu Saati Üret</h3>
+                <p style="font-size: 14px; color: var(--text-secondary);">Çalışacağınız tarihi ve saat aralığını seçin, sistem otomatik olarak 30 dakikalık slotlar oluştursun.</p>
+                
+                <form id="availabilityForm" style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px;">
+                    <div>
+                        <label style="font-weight: bold; font-size: 14px;">Tarih Seçin</label>
+                        <input type="date" id="availDate" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;" required>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <div style="flex: 1;">
+                            <label style="font-weight: bold; font-size: 14px;">Başlangıç</label>
+                            <input type="time" id="startTime" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;" required>
+                        </div>
+                        <div style="flex: 1;">
+                            <label style="font-weight: bold; font-size: 14px;">Bitiş</label>
+                            <input type="time" id="endTime" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;" required>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" style="background-color: var(--primary-yesil); padding: 12px; font-weight: bold; font-size: 15px; border-radius: 5px;">Saatleri Üret</button>
+                </form>
+
+                <div style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 20px;">
+                    <button type="button" onclick="toggleAvailabilities()" style="width: 100%; background: var(--secondary-mavi); color: white; padding: 12px; border-radius: 5px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border: none; font-weight: bold; font-size: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                        <span id="availCountText">Açık Randevu Slotlarım (0)</span>
+                        <span id="availToggleIcon">▼</span>
+                    </button>
+                    
+                    <div id="vet-availabilities-list" style="display: none; margin-top: 15px; max-height: 250px; overflow-y: auto; padding-right: 5px;">
+                        </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="js/popup.js"></script>
+    <script src="js/vet.js"></script> </body>
+</html>

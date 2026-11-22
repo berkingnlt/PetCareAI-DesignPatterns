@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Randevu Al - PetCare AI</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body style="background-color: #f4f7f6;"> <header class="topbar">
+        <h1>PetCare AI</h1>
+        <nav id="userNav">
+            <a href="dashboard.html">Ana Panel</a>
+            <a href="add-pet.html">Evcil Hayvan Ekle</a>
+            <a href="book-appointment.html" style="color: var(--secondary-mavi); font-weight: bold; border-bottom: 2px solid var(--secondary-mavi); padding-bottom: 5px;">Randevu Al</a>
+            <a href="profile.html">Profilim</a>
+            <a href="index.html" onclick="localStorage.removeItem('loggedIn'); localStorage.removeItem('loggedInUser');">Çıkış Yap</a>
+        </nav>
+    </header>
+
+    <div class="container" style="max-width: 800px; margin: 40px auto 50px auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.05);">
+        
+        <h2 style="text-align: center; color: var(--secondary-mavi); margin-top: 0; font-size: 28px;">🐾 Veteriner Randevusu Al</h2>
+        <p style="text-align: center; color: var(--text-secondary); margin-bottom: 30px; font-size: 15px;">İhtiyacınıza en uygun kliniği bulun ve anında randevu oluşturun.</p>
+
+        <form id="appointmentForm">
+            
+            <label style="font-weight: bold; font-size: 14px; color: var(--secondary-mavi); display: block; margin-bottom: 5px;">Hangi Evcil Hayvanınız İçin?</label>
+            <select id="appPet" required style="width: 100%; border: 1px solid #ccc; padding: 12px; border-radius: 8px; box-sizing: border-box; margin-bottom: 25px; background: #f9f9f9;">
+                <option value="">-- Sistemden Hayvan Seçiniz --</option>
+            </select>
+
+            <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                <div style="flex: 1;">
+                    <label style="font-weight: bold; font-size: 14px; color: #555; display: block; margin-bottom: 5px;">Şehir</label>
+                    <select id="appCity" onchange="updateAppDistricts()" style="width: 100%; border: 1px solid #ccc; padding: 12px; border-radius: 8px; box-sizing: border-box;">
+                        <option value="all">-- Tüm Şehirler --</option>
+                        <option value="İstanbul">İstanbul</option>
+                        <option value="Ankara">Ankara</option>
+                        <option value="İzmir">İzmir</option>
+                        <option value="Bursa">Bursa</option>
+                        <option value="Antalya">Antalya</option>
+                    </select>
+                </div>
+                <div style="flex: 1;">
+                    <label style="font-weight: bold; font-size: 14px; color: #555; display: block; margin-bottom: 5px;">İlçe (İsteğe Bağlı)</label>
+                    <select id="appDistrict" onchange="filterClinics()" disabled style="width: 100%; border: 1px solid #ccc; padding: 12px; border-radius: 8px; box-sizing: border-box; background: #eee;">
+                        <option value="all">-- Tüm İlçeler --</option>
+                    </select>
+                </div>
+            </div>
+
+            <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 30px; cursor: pointer; background: #fff3e0; padding: 15px; border-radius: 8px; border: 1px solid #ffe0b2;">
+                <input type="checkbox" id="appRequireBed" onchange="filterClinics()" style="width: 20px; height: 20px;">
+                <b style="color: var(--accent-turuncu); font-size: 15px;">Yatarak Tedavi (Boş Yatak) Gerekiyor</b>
+            </label>
+
+            <div style="display: flex; gap: 15px; margin-bottom: 25px;">
+                <div style="flex: 1;">
+                    <label style="font-weight: bold; font-size: 14px; color: var(--secondary-mavi); display: block; margin-bottom: 5px;">Klinik Seçin</label>
+                    <select id="bookingClinic" onchange="loadVetsForClinic()" required style="width: 100%; border: 2px solid var(--secondary-mavi); padding: 12px; border-radius: 8px; box-sizing: border-box;">
+                        <option value="">-- Önce Lokasyon Seçin --</option>
+                    </select>
+                </div>
+                <div style="flex: 1;">
+                    <label style="font-weight: bold; font-size: 14px; color: var(--primary-yesil); display: block; margin-bottom: 5px;">Hekim Seçin (İsteğe Bağlı)</label>
+                    <select id="bookingVet" onchange="loadAvailableSlots()" disabled style="width: 100%; background: #f9f9f9; border: 1px solid #ccc; padding: 12px; border-radius: 8px; box-sizing: border-box; cursor: not-allowed;">
+                        <option value="">-- Önce Klinik Seçin --</option>
+                    </select>
+                </div>
+            </div>
+
+            <label style="font-weight: bold; font-size: 14px; color: #555; display: block; margin-bottom: 5px;">Müsait Randevu Saatleri (Tarih ve Saate Göre)</label>
+            <div id="bookingSlotsContainer" style="background: #f8fcfb; border: 1px solid #b2dfdb; border-radius: 8px; padding: 20px; max-height: 280px; overflow-y: auto; display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px;">
+                <p style="color: gray; font-size: 14px; margin: 0; width: 100%; text-align: center; font-style: italic;">Lütfen saatleri görebilmek için yukarıdan bir klinik seçin.</p>
+            </div>
+            
+            <input type="hidden" id="selectedAvailId">
+
+            <label style="font-weight: bold; font-size: 14px; color: #555; display: block; margin-bottom: 5px;">Randevu Nedeni / Şikayetiniz</label>
+            <textarea id="appReason" rows="3" placeholder="Örn: Yüksek ateş, halsizlik, aşı talebi..." required style="width: 100%; border: 1px solid #ccc; padding: 12px; border-radius: 8px; box-sizing: border-box; margin-bottom: 20px; resize: vertical;"></textarea>
+            
+            <label style="font-weight: bold; font-size: 14px; color: #555; display: block; margin-bottom: 5px;">Şikayet / Durum Fotoğrafı (İsteğe Bağlı URL)</label>
+            <input type="text" id="appPhoto" placeholder="Örn: https://site.com/yara.jpg" style="width: 100%; border: 1px solid #ccc; padding: 12px; border-radius: 8px; box-sizing: border-box; margin-bottom: 30px;">
+
+            <button type="submit" style="width: 100%; background: var(--secondary-mavi); color: white; border: none; padding: 16px; font-weight: bold; font-size: 18px; border-radius: 8px; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='#1565C0'" onmouseout="this.style.background='var(--secondary-mavi)'">Randevu Talebini Gönder</button>
+        </form>
+    </div>
+
+    <script src="js/popup.js"></script>
+    <script src="js/appointment.js"></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+**/target/
+**/.env
+**/.env.*
+!**/.env.example
+**/.git/
+**/.idea/
+**/.vscode/
+**/*.class
+**/*.log
+.DS_Store
+backend/src/main/resources/application.properties
+**/.env
+**/target/
+**/node_modules/
+.vscode/

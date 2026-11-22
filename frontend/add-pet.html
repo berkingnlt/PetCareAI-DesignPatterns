@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Evcil Hayvan Ekle - PetCare AI</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .hidden { display: none; }
+        .vaccine-group { background: #ffffff; padding: 20px; border-radius: 8px; margin-top: 10px; margin-bottom: 20px; border-left: 4px solid var(--secondary-mavi); box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+        .vaccine-group h3 { margin-top: 0; font-size: 16px; color: var(--secondary-mavi); margin-bottom: 15px; }
+        .vaccine-info { display: block; font-size: 12px; color: var(--text-secondary); margin-top: -6px; margin-bottom: 8px; font-weight: normal; }
+    </style>
+</head>
+<body>
+
+    <header class="topbar">
+        <h1>PetCare AI</h1>
+       <nav>
+            <a href="dashboard.html">Ana Panel</a>
+            <a href="add-pet.html" style="color: var(--secondary-mavi); font-weight: bold; border-bottom: 2px solid var(--secondary-mavi); padding-bottom: 5px;">Evcil Hayvan Ekle</a>
+            <a href="book-appointment.html">Randevu Al</a>
+            <a href="profile.html">Profilim</a>
+            <a href="index.html" onclick="localStorage.removeItem('loggedIn'); localStorage.removeItem('loggedInUser');">Çıkış Yap</a>
+        </nav>
+    </header>
+
+    <h2>Evcil Hayvan Ekle</h2>
+
+    <form id="petForm">
+        <label>Hayvanın Adı</label>
+        <input type="text" id="name" required>
+
+        <label>Türü</label>
+        <select id="type" required onchange="togglePetFields()">
+            <option value="">-- Lütfen Seçin --</option>
+            <option value="cat">Kedi</option>
+            <option value="dog">Köpek</option>
+        </select>
+
+        <div id="cat-fields" class="hidden">
+            <label>Kedi Kaç Haftalık? (Aşı takvimi için önemlidir)</label>
+            <input type="number" id="cat-age" min="1" placeholder="Örn: 8">
+            <label>Kedinin Cinsi</label>
+            <input type="text" id="cat-breed" placeholder="Örn: Tekir, Scottish Fold...">
+            <div class="vaccine-group">
+                <h3>Temel Kedi Aşıları</h3>
+                <label>Karma Aşı (FVRCP)</label><input type="date" id="cat-karma">
+                <label>Kuduz Aşısı</label><input type="date" id="cat-kuduz">
+                <label>Lösemi Aşısı (FeLV)</label><input type="date" id="cat-felv">
+                <label>İç/Dış Parazit</label><input type="date" id="cat-parazit">
+            </div>
+        </div>
+
+        <div id="dog-fields" class="hidden">
+            <label>Köpek Kaç Haftalık? (Aşı takvimi için önemlidir)</label>
+            <input type="number" id="dog-age" min="1" placeholder="Örn: 8">
+            <label>Köpeğin Cinsi</label>
+            <input type="text" id="dog-breed" placeholder="Örn: Golden Retriever, Pug...">
+            <div class="vaccine-group">
+                <h3>Temel Köpek Aşıları</h3>
+                <label>Kuduz Aşısı</label><input type="date" id="dog-kuduz">
+                <label>Karma Aşı</label><input type="date" id="dog-karma">
+                <label>İç/Dış Parazit</label><input type="date" id="dog-parazit">
+                <label>Bronşin (Kennel Cough)</label><input type="date" id="dog-bronsin">
+                <label>Corona</label><input type="date" id="dog-corona">
+                <label>Lyme</label><input type="date" id="dog-lyme">
+            </div>
+        </div>
+        
+        <label>Evcil Hayvan Fotoğrafı (İsteğe Bağlı URL)</label>
+        <input type="text" id="petPhoto" placeholder="Örn: https://site.com/kopek.jpg">
+        <button type="submit" style="background: var(--primary-yesil);">Sisteme Ekle</button>
+    </form>
+
+    <script src="js/popup.js"></script>
+    <script src="js/pets.js"></script>
+    <script>
+        // Form gösterme/gizleme kodumuz. Ekleme kodları (submit) artık SADECE pets.js içinde!
+        function togglePetFields() {
+            const type = document.getElementById("type").value;
+            const catFields = document.getElementById("cat-fields");
+            const dogFields = document.getElementById("dog-fields");
+
+            if (type === "cat") {
+                catFields.style.display = "block"; dogFields.style.display = "none";
+            } else if (type === "dog") {
+                catFields.style.display = "none"; dogFields.style.display = "block";
+            } else {
+                catFields.style.display = "none"; dogFields.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>

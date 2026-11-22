@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register - PetCare</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <header class="topbar">
+        <h1>PetCare AI</h1>
+        <nav>
+            <a href="index.html">Ana Sayfa</a>
+            <a href="login.html">Giriş Yap</a>
+        </nav>
+    </header>
+
+    <h2>Kayıt Ol</h2>
+
+    <form id="registerForm">
+        <label>İsim Soyisim</label>
+        <input type="text" id="regName" required>
+
+        <label>Email Adresi</label>
+        <input type="email" id="regEmail" required>
+
+        <label>Telefon Numarası</label>
+        <input type="tel" id="regPhone" maxlength="10" placeholder="Örn: 5555555555" required>
+
+        <label>Şifre</label>
+        <div class="password-container">
+            <input type="password" id="regPassword" required>
+            <span class="password-toggle" id="toggleRegPassword">👁️</span>
+        </div>
+
+        <label>Hesap Türü</label>
+            <select id="role" onchange="toggleFields()" required style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px;">
+                <option value="user">Hasta Sahibi (Standart)</option>
+                <option value="vet">Veteriner Hekim</option>
+                <option value="clinic">Veteriner Kliniği (Kurumsal)</option>
+            </select>
+
+            <div id="vetFields" style="display: none; background: #f9f9f9; padding: 15px; border-radius: 5px; margin-bottom: 15px; border-left: 4px solid var(--secondary-mavi);">
+                <label>Mesleki Deneyim (Yıl)</label>
+                <input type="number" id="vetExperience" min="0" placeholder="Örn: 5">
+                
+                <label style="color: var(--primary-yesil); font-weight: bold; margin-top: 10px; display: block;">Çalıştığınız Klinik</label>
+                <select id="vetClinicSelect" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                    <option value="">-- Lütfen Kliniğinizi Seçin --</option>
+                    </select>
+                <p style="font-size: 11px; color: gray; margin-top: 5px;">* Hesabınızın aktif olması için seçtiğiniz klinik yöneticisinin sizi onaylaması gerekmektedir.</p>
+            </div>
+
+            <div id="clinicFields" style="display: none; background: #fffdf5; padding: 15px; border-radius: 5px; margin-bottom: 15px; border-left: 4px solid var(--accent-turuncu);">
+                <label>Klinik / Poliklinik Adı</label>
+                <input type="text" id="clinicName" placeholder="Örn: PatiPark Veteriner Kliniği">
+
+                <div style="display: flex; gap: 10px;">
+                    <div style="flex: 1;">
+                        <label>Şehir</label>
+                        <select id="clinicCity" onchange="updateRegisterDistricts()">
+                            <option value="">-- Şehir Seçin --</option>
+                            <option value="İstanbul">İstanbul</option>
+                            <option value="Ankara">Ankara</option>
+                            <option value="İzmir">İzmir</option>
+                            <option value="Antalya">Antalya</option>
+                            <option value="Bursa">Bursa</option>
+                        </select>
+                    </div>
+                    <div style="flex: 1;">
+                        <label>İlçe</label>
+                        <select id="clinicDistrict" disabled>
+                            <option value="">-- Önce Şehir --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <div style="flex: 1;">
+                        <label>Yatak Kapasitesi</label>
+                        <input type="number" id="clinicBedCapacity" min="0" placeholder="Yoksa 0">
+                    </div>
+                    <div style="flex: 1; display: flex; align-items: flex-end; padding-bottom: 10px;">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; font-weight: bold; color: var(--accent-turuncu);">
+                            <input type="checkbox" id="clinicEmergency" style="width: 16px; height: 16px;">
+                            7/24 Acil Hizmeti
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+        <button type="submit" style="background: var(--primary-yesil);">Hesap Oluştur</button>
+    </form>
+
+    <script src="js/popup.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        function toggleVetFields() {
+            const role = document.getElementById("regRole").value;
+            const vetFields = document.getElementById("vetFields");
+            if (role === "vet") {
+                vetFields.style.display = "block";
+            } else {
+                vetFields.style.display = "none";
+            }
+        }
+        
+        function updateVetDistricts() {
+            const city = document.getElementById("vetCity").value;
+            const distSelect = document.getElementById("vetDistrict");
+            
+            distSelect.innerHTML = '<option value="">-- İlçe Seçin --</option>';
+            
+            if(city) {
+                locations[city].forEach(d => {
+                    distSelect.innerHTML += `<option value="${d}">${d}</option>`;
+                });
+                distSelect.disabled = false;
+            } else {
+                distSelect.disabled = true;
+            }
+        }
+    </script>
+</body>
+</html>

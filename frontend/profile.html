@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Profilim - PetCare AI</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <header class="topbar">
+        <h1>PetCare AI</h1>
+        <nav id="dynamicProfileNav"></nav>
+    </header>
+
+    <div class="container" style="max-width: 600px; margin-top: 40px; margin-bottom: 50px;">
+        <h2 style="text-align: center; color: var(--secondary-mavi);">⚙️ Profil Ayarları</h2>
+        <p style="text-align: center; color: var(--text-secondary); margin-bottom: 30px;">Hesap ve güvenlik bilgilerinizi buradan güncelleyebilirsiniz.</p>
+        
+        <div style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+            <form id="profileForm" style="display: flex; flex-direction: column; gap: 15px;">
+                <div id="dynamicFormFields">
+                    </div>
+                
+                <button type="submit" style="background: var(--primary-yesil); color: white; padding: 12px; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px; font-size: 16px;">Değişiklikleri Kaydet</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/popup.js"></script>
+    <script src="js/profile.js"></script>
+</body>
+</html>

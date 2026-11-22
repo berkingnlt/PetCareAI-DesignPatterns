@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hastalarım - PetCare AI</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <header class="topbar">
+        <h1>PetCare AI</h1>
+        <nav id="vetNav">
+            <a href="vet-dashboard.html">Ana Panel</a>
+            <a href="vet-ajanda.html">Ajandam</a>
+            <a href="vet-hastalar.html" style="color: var(--secondary-mavi); font-weight: bold; border-bottom: 2px solid var(--secondary-mavi); padding-bottom: 5px;">Hastalarım</a>
+            <a href="profile.html">Profilim</a>
+            <a href="index.html" onclick="localStorage.removeItem('loggedIn'); localStorage.removeItem('loggedInUser');">Çıkış Yap</a>
+        </nav>
+    </header>
+
+    <div class="container" style="margin-bottom: 50px;">
+        <h2 style="text-align: center; margin-top: 40px; color: var(--secondary-mavi);">🐾 Klinik Hasta Arşivi</h2>
+        <p style="text-align: center; color: var(--text-secondary); margin-bottom: 30px;">Size onaylı randevusu bulunan tüm hastalarınızın dosyalarına buradan erişebilirsiniz.</p>
+        
+        <div id="vet-pet-grid" style="max-width: 1000px; margin: 0 auto;"></div>
+    </div>
+
+    <div id="editModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <span class="close-btn" onclick="closeEditModal()">&times;</span>
+            <h2 id="editModalTitle" style="color: var(--secondary-mavi); margin-top: 0;">Hasta Bilgilerini Düzenle</h2>
+            
+            <form id="editPetForm">
+                <input type="hidden" id="editPetId">
+                <input type="hidden" id="editPetType">
+                
+                <label>Yaş (Haftalık)</label>
+                <input type="number" id="editAge" min="1" placeholder="Örn: 12">
+                
+                <label>Cins / Irk</label>
+                <input type="text" id="editBreed" placeholder="Örn: Golden Retriever">
+                
+                <h3 style="margin-top: 20px; font-size: 15px; color: var(--primary-yesil); border-bottom: 1px solid #eee; padding-bottom: 5px;">💉 Aşı Takvimi</h3>
+                <div id="editVaccinesContainer"></div>
+                
+                <button type="submit" style="background: var(--accent-turuncu); width: 100%; margin-top: 15px;">Değişiklikleri Kaydet</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/popup.js"></script>
+    <script src="js/vet-hastalar.js"></script>
+</body>
+</html>

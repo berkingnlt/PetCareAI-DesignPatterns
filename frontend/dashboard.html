@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Ana Panel - PetCare AI</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <header class="topbar">
+        <h1>PetCare AI</h1>
+        <nav>
+            <a href="dashboard.html" style="color: var(--secondary-mavi); font-weight: bold; border-bottom: 2px solid var(--secondary-mavi); padding-bottom: 5px;">Ana Panel</a>
+            <a href="add-pet.html">Evcil Hayvan Ekle</a>
+            <a href="book-appointment.html">Randevu Al</a>
+            <a href="profile.html">Profilim</a>
+            <a href="index.html" onclick="localStorage.removeItem('loggedIn'); localStorage.removeItem('loggedInUser');">Çıkış Yap</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        
+        <section id="vaccine-alerts-container" style="max-width: 800px; margin: 20px auto 0 auto;"></section>
+        
+        <h2 style="margin-top: 20px; color: var(--secondary-mavi);">📅 Randevularım</h2>
+        <div id="my-appointments-grid" class="pet-grid" style="margin-bottom: 50px; border-bottom: 2px dashed #ccc; padding-bottom: 40px;"></div>
+
+        <h2 style="margin-top: 40px; color: gray;">🕰️ Geçmiş Randevularım</h2>
+        <div id="past-appointments-grid" class="pet-grid" style="margin-bottom: 50px;"></div>
+
+        <h2 style="margin-top: 20px;">Evcil Hayvanlarım</h2>
+        <div id="my-pets-grid" class="pet-grid"></div>
+        
+    </div>
+
+    <div id="editOwnerModal" class="modal-overlay">
+        <div class="custom-modal" style="max-width: 450px; text-align: left; max-height: 90vh; overflow-y: auto;">
+            <h3 style="text-align: center; color: var(--secondary-mavi);" id="editOwnerModalTitle">Bilgileri Güncelle</h3>
+            
+            <form id="editOwnerPetForm">
+                <input type="hidden" id="editOwnerPetId">
+                <input type="hidden" id="editOwnerPetType"> 
+                
+                <label>Hayvanın Adı</label>
+                <input type="text" id="editOwnerPetName" required>
+
+                <label>Yaş (Haftalık)</label>
+                <input type="number" id="editOwnerPetAge" min="1" placeholder="Örn: 8">
+
+                <label>Cins</label>
+                <input type="text" id="editOwnerPetBreed">
+
+                <label>Fotoğraf (URL)</label>
+                <input type="text" id="editOwnerPetPhoto">
+
+                <div class="vaccine-group" style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
+                    <h3 style="font-size: 15px; color: var(--secondary-mavi);">Aşı Geçmişini Güncelle</h3>
+                    <div id="editOwnerVaccinesContainer"></div>
+                </div>
+
+                <div class="modal-buttons" style="margin-top: 20px;">
+                    <button type="button" class="btn-cancel" onclick="closeEditOwnerModal()">İptal</button>
+                    <button type="submit" style="background: var(--primary-yesil); color: white;">Değişiklikleri Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- CHAT BUTTON -->
+    <div class="chat-toggle" onclick="toggleChat()">💬</div>
+
+    <!-- CHAT WINDOW -->
+    <div class="chat-container" id="chatBox">
+        <div class="chat-header">PetCare AI Assistant</div>
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-input-area">
+            <input id="chatInput" placeholder="Ask about your pet...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script src="js/popup.js"></script>
+    <script src="js/pets.js"></script>
+    <script src="js/chat.js"></script>
+
+   <!-- YENİ: AŞI ALGORİTMASI VE AKILLI UYARI MOTORU -->
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            let loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+            if (!loggedInUser || loggedInUser.role !== "user") return;
+
+            let allPets = JSON.parse(localStorage.getItem("pets")) || [];
+            let myPets = allPets.filter(p => p.ownerEmail === loggedInUser.email);
+            
+            // YENİ: Bütün randevuları çekiyoruz
+            let allAppointments = JSON.parse(localStorage.getItem("appointments")) || [];
+
+            let alertsContainer = document.getElementById("vaccine-alerts-container");
+            if (!alertsContainer || myPets.length === 0) return;
+
+            let alertsHTML = "";
+            
+            // Bugünün tarihini saatini sıfırlayarak alıyoruz ki "bugün" olan randevuları da doğru hesaplasın
+            let today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            for (const pet of myPets) {
+                
+                // YENİ ALGORİTMA: Bu hayvanın gelecekte (veya bugün) onaylı/bekleyen bir randevusu var mı?
+                let petCurrentId = pet.id ? pet.id : pet.name;
+                let hasUpcomingAppointment = allAppointments.some(app => {
+                    let isSamePet = (app.petId === petCurrentId) || (app.petName === pet.name);
+                    if (!isSamePet) return false;
+                    
+                    let appDate = new Date(app.date);
+                    appDate.setHours(0, 0, 0, 0);
+                    
+                    // Randevu iptal/reddedilmiş DEĞİLSE ve tarihi BUGÜN veya GELECEKTEYSE uyarıyı sustur!
+                    return (app.status !== "cancelled" && app.status !== "rejected") && (appDate >= today);
+                });
+
+                // Eğer kullanıcının zaten randevusu varsa bu evcil hayvanı atla, uyarı basma.
+                if (hasUpcomingAppointment) {
+                    continue;
+                }
+
+                let ageWeeks = parseInt(pet.age) || 0;
+                let rules = await getVaccineRules(pet.type, ageWeeks);
+                let vaccines = pet.vaccines || {};
+
+                for (let vName in rules) {
+                    let freqDays = rules[vName];
+                    let lastDateStr = vaccines[vName];
+
+                    if (!lastDateStr) {
+                        alertsHTML += createAlertCard(pet.name, vName, "Hiç Yaptırılmamış (Hemen Gerekiyor!)", "overdue");
+                        continue;
+                    }
+
+                    if (freqDays > 0) {
+                        let lastDate = new Date(lastDateStr);
+                        let dueDate = new Date(lastDate.getTime() + (freqDays * 24 * 60 * 60 * 1000));
+                        let diffTime = dueDate - today;
+                        let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                        if (diffDays <= 0) {
+                            alertsHTML += createAlertCard(pet.name, vName, "Süresi Geçti (Yaptırılması Gerek!)", "overdue");
+                        } else if (diffDays <= 7) {
+                            alertsHTML += createAlertCard(pet.name, vName, `${diffDays} gün var`, "warning");
+                        } else if (diffDays <= 14) {
+                            alertsHTML += createAlertCard(pet.name, vName, "1 hafta var", "warning");
+                        } else if (diffDays <= 21) {
+                            alertsHTML += createAlertCard(pet.name, vName, "2 hafta var", "info");
+                        } else if (diffDays <= 28) {
+                            alertsHTML += createAlertCard(pet.name, vName, "3 hafta var", "info");
+                        }
+                    }
+                }
+            }
+
+            if (alertsHTML !== "") {
+                alertsContainer.innerHTML = `
+                    <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 30px; border: 1px solid #eee;">
+                        <h2 style="color: #d32f2f; margin-top: 0; margin-bottom: 15px; font-size: 22px;">🚨 Yaklaşan Aşı Takvimi</h2>
+                        ${alertsHTML}
+                    </div>
+                `;
+            } else {
+                // Eğer hiçbir uyarı yoksa konteyneri temizle (Eski uyarılar ekranda kalmasın)
+                alertsContainer.innerHTML = "";
+            }
+        });
+
+        async function getVaccineRules(type, ageWeeks) {
+            try {
+                const response = await fetch(`http://localhost:8080/api/vaccines/schedule?type=${encodeURIComponent(type)}&ageWeeks=${ageWeeks}`);
+                if (response.ok) return await response.json();
+            } catch (error) {
+                console.warn("Aşı API erişilemedi; eski kurallar kullanılacak.", error);
+            }
+            return getLocalVaccineRules(type, ageWeeks);
+        }
+
+        function getLocalVaccineRules(type, ageWeeks) {
+            let rules = {}; 
+            if (type === "cat") {
+                if (ageWeeks >= 6 && ageWeeks < 8) { rules["Karma"] = 0; rules["İç/Dış Parazit"] = 14; }
+                else if (ageWeeks >= 9 && ageWeeks < 12) { rules["Karma"] = 0; rules["Lösemi (FeLV)"] = 0; rules["İç/Dış Parazit"] = 14; }
+                else if (ageWeeks >= 12 && ageWeeks < 14) { rules["Karma"] = 0; rules["Lösemi (FeLV)"] = 0; rules["Kuduz"] = 0; rules["İç/Dış Parazit"] = 30; }
+                else if (ageWeeks >= 14 && ageWeeks < 52) { rules["İç/Dış Parazit"] = 30; } 
+                else if (ageWeeks >= 52) { rules["Karma"] = 365; rules["Kuduz"] = 365; rules["İç/Dış Parazit"] = 90; rules["Lösemi (FeLV)"] = 365; }
+            } else if (type === "dog") {
+                if (ageWeeks >= 6 && ageWeeks < 8) { rules["Karma"] = 0; rules["Corona"] = 0; rules["İç/Dış Parazit"] = 14; }
+                else if (ageWeeks >= 9 && ageWeeks < 12) { rules["Karma"] = 0; rules["Corona"] = 0; rules["Bronşin"] = 0; rules["İç/Dış Parazit"] = 14; }
+                else if (ageWeeks >= 12 && ageWeeks < 14) { rules["Karma"] = 0; rules["Kuduz"] = 0; rules["Bronşin"] = 0; rules["İç/Dış Parazit"] = 30; }
+                else if (ageWeeks >= 14 && ageWeeks < 16) { rules["Lyme"] = 0; rules["İç/Dış Parazit"] = 30; }
+                else if (ageWeeks >= 16 && ageWeeks < 52) { rules["Lyme"] = 0; rules["İç/Dış Parazit"] = 30; }
+                else if (ageWeeks >= 52) { rules["Karma"] = 365; rules["Kuduz"] = 365; rules["Bronşin"] = 365; rules["Lyme"] = 365; rules["İç/Dış Parazit"] = 90; }
+            }
+            return rules;
+        }
+
+        function createAlertCard(petName, vaccine, timeText, severity) {
+            let bgColor = severity === "overdue" ? "#ffebee" : (severity === "warning" ? "#fff3cd" : "#e3f2fd");
+            let borderColor = severity === "overdue" ? "#f44336" : (severity === "warning" ? "#ffc107" : "#2196f3");
+            let textColor = severity === "overdue" ? "#c62828" : (severity === "warning" ? "#856404" : "#0d47a1");
+            let icon = severity === "overdue" ? "❗" : "⚠️";
+
+            return `
+                <div style="background: ${bgColor}; border-left: 5px solid ${borderColor}; padding: 15px; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h4 style="margin:0; color: ${textColor}; font-size: 16px;">${icon} ${petName} - ${vaccine} Aşısı</h4>
+                        <p style="margin: 5px 0 0 0; color: ${textColor}; font-size: 14px;">Zaman: <b>${timeText}</b></p>
+                    </div>
+                    <a href="book-appointment.html" style="background: ${borderColor}; color: #fff; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 13px; transition: 0.2s;">Randevu Al</a>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
